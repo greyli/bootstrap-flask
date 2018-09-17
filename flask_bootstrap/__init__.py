@@ -11,11 +11,11 @@ try:
     from wtforms.fields import HiddenField
 except ImportError:
 
-    def is_hidden_field_filter(field):
+    def is_hidden_field_test(field):
         raise RuntimeError('WTForms is not installed.')
 else:
 
-    def is_hidden_field_filter(field):
+    def is_hidden_field_test(field):
         return isinstance(field, HiddenField)
 
 
@@ -34,9 +34,10 @@ class Bootstrap(object):
                               static_folder='static', static_url_path='/bootstrap' + app.static_url_path)
         app.register_blueprint(blueprint)
 
+        # `bootstrap_is_hidden_field` is deprecated in favor of the `is_hidden` test
+        app.jinja_env.globals['bootstrap_is_hidden_field'] = is_hidden_field_test
         app.jinja_env.globals['bootstrap'] = self
-        app.jinja_env.globals['bootstrap_is_hidden_field'] = \
-            is_hidden_field_filter
+        app.jinja_env.tests['is_hidden'] = is_hidden_field_test
         app.jinja_env.add_extension('jinja2.ext.do')
         # default settings
         app.config.setdefault('BOOTSTRAP_SERVE_LOCAL', False)
